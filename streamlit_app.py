@@ -27,10 +27,18 @@ df = pd.DataFrame(json_data)
 # Separate features (X) and target (Y)
 X = df.iloc[:, :-1]  # All columns except the last one (features)
 Y = df.iloc[:, -1]   # The last column (target)
+# Encode categorical variables if necessary
+    if Y.dtype == 'object':
+        label_encoder = LabelEncoder()
+        Y = label_encoder.fit_transform(Y)
+
+    # Scaling the features
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
 
 
 # Split the dataset into training and testing sets
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+X_train, X_test, Y_train, Y_test = train_test_split(X_scaled, Y, test_size=0.2, random_state=42)
 
 # Build the ANN model
 model = Sequential()
@@ -89,9 +97,12 @@ responses = [
 
 # Scale the user's input using the scaler
 # input_data_scaled = scaler.transform([responses])
+# Scale the user's input using the scaler
+input_data_scaled = scaler.transform([responses])
 
 # Make a prediction
-prediction = model.predict(responses)
+prediction = model.predict(input_data_scaled)
+
 
 # Round the prediction
 rounded_prediction = np.round(prediction[0][0])
