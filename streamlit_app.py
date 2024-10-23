@@ -26,12 +26,11 @@ df = pd.DataFrame(json_data)
 
 # Separate features (X) and target (Y)
 X = df.iloc[:, :-1]  # All columns except the last one (features)
-y = df.iloc[:, -1]   # The last column (target)
+Y = df.iloc[:, -1]   # The last column (target)
 
-X_scaled = scaler.fit_transform(X)
 
 # Split the dataset into training and testing sets
-X_train, X_test, Y_train, Y_test = train_test_split(X_scaled, Y, test_size=0.2, random_state=42)
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
 
 # Build the ANN model
 model = Sequential()
