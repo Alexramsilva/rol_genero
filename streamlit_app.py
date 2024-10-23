@@ -145,13 +145,13 @@ st.write("https://www.inegi.org.mx/programas/endireh/2021/")
 # Insertar el código HTML con estilos personalizados
 st.markdown("""
     <div class="container col-sm-5 creditos text-center">
-        <p style="margin-top:0;margin-bottom:0;font-size:15px;color:#8a8a8a;text-align:center">
+        <p style="margin-top:0;margin-bottom:0;font-size:15px;color: #dad3d5;text-align:center">
             <strong>Colaboración:</strong>
         </p>
-        <p style="margin-top:0;margin-bottom:0;font-size:12px;color:#8a8a8a;text-align:center">
+        <p style="margin-top:0;margin-bottom:0;font-size:12px;color: #dad3d5;text-align:center">
             <strong>Asignatura (UCA): Perspectiva de Género para el Diseño Social  LCFI-URC</strong>
         </p>
-        <p style="margin-top:0;margin-bottom:0;font-size:12px;color:#8a8a8a;text-align:center">
+        <p style="margin-top:0;margin-bottom:0;font-size:12px;color: #dad3d5;text-align:center">
             <strong>Grupos 104 y 107 COY-LCFI-URC</strong>
         </p>
     </div>
