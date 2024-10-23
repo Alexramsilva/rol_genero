@@ -28,54 +28,71 @@ df = pd.DataFrame(json_data)
 X = df.iloc[:, :-1]  # All columns except the last one (features)
 y = df.iloc[:, -1]   # The last column (target)
 
-# Dividir los datos en conjunto de entrenamiento y prueba
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_scaled = scaler.fit_transform(X)
 
-# Normalizar los datos (opcional, pero recomendado)
-X_train = X_train.astype(float) / np.max(X_train, axis=0)
-X_test = X_test.astype(float) / np.max(X_test, axis=0)
+# Split the dataset into training and testing sets
+X_train, X_test, Y_train, Y_test = train_test_split(X_scaled, Y, test_size=0.2, random_state=42)
 
-# Crear el modelo
+# Build the ANN model
 model = Sequential()
-model.add(Dense(16, input_dim=X_train.shape[1], activation='relu'))
-model.add(Dense(8, activation='relu'))
-model.add(Dense(1, activation='sigmoid'))  # Cambiar a 'softmax' si hay múltiples clases
+model.add(Dense(64, input_dim=X_train.shape[1], activation='relu'))
+model.add(Dense(32, activation='relu'))
+model.add(Dense(1, activation='linear'))  # Output layer
 
-# Compilar el modelo
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+# Compile the model
+model.compile(loss='mean_squared_error', optimizer='adam')
 
-# Entrenar el modelo
-model.fit(X_train, y_train, epochs=50, batch_size=5, verbose=0)  # Suprimir la salida de entrenamiento
+# Train the model
+model.fit(X_train, Y_train, epochs=50, batch_size=10, verbose=1)
 
-# Interfaz de Streamlit para hacer predicciones
-st.title("Predicción de Encuesta")
+# Define user input questions
+st.write("Responde a las siguientes preguntas:")
 
-# Entradas del usuario
-p6_1_1 = st.selectbox("¿Quién cree usted que debe ser responsable del cuidado de los hijos(as), de las personas enfermas y ancianas?", [1, 2, 3])
-p6_1_2 = st.selectbox("¿Quién cree usted que debe ganar más salario en el trabajo?", [1, 2, 3])
-p6_1_3 = st.selectbox("¿Quién cree usted que debe ser el responsable de las tareas de la casa?", [1, 2, 3])
-p6_1_4 = st.selectbox("¿Quién cree usted que debe ser el responsable de traer dinero para la casa?", [1, 2, 3])
-p6_1_5 = st.selectbox("¿Quién cree usted que tiene mayor capacidad para trabajar y/o estudiar?", [1, 2, 3])
-p6_2_1 = st.selectbox("¿Está usted de acuerdo en que hombres y mujeres tienen el mismo derecho a salir por las noches a divertirse?", [1, 2])
-p6_2_2 = st.selectbox("¿Está usted de acuerdo en que las mujeres que tienen hijos(as) trabajen, aún si no tienen necesidad de hacerlo?", [1, 2])
+# Example questions (corresponding to features in your dataset)
+P6_1_1 = st.selectbox(
+"1. ¿Quién cree usted que debe ser responsable del cuidado de los hijos(as), de las personas enfermas y ancianas?",
+("La mujer", "El hombre", "Ambos"))
 
-# Crear el vector de entrada
-input_data = np.array([[p6_1_1, p6_1_2, p6_1_3, p6_1_4, p6_1_5, p6_2_1, p6_2_2]], dtype=float)
+P6_1_2 = st.selectbox(
+"2. ¿Quién cree usted que debe ganar más salario en el trabajo?",
+("La mujer", "El hombre", "Deben ganar lo mismo"))
 
-# Normalizar los datos de entrada (igual que los datos de entrenamiento)
-input_data /= np.max(X_train, axis=0)
+P6_1_3 = st.selectbox(
+"3. ¿Quién cree usted que debe ser el responsable de las tareas de la casa?",
+("La mujer", "El hombre", "Ambos"))
 
-# Hacer la predicción
-prediction = model.predict(input_data)
-predicted_class = (prediction > 0.5).astype(int)  # Umbral para clasificación binaria
+P6_1_4 = st.selectbox(
+"4. ¿Quién cree usted que debe ser el responsable de traer dinero para la casa?",
+("La mujer", "El hombre", "Ambos"))
 
-# Mostrar el resultado
-if st.button("Realizar Predicción"):
-    st.write(f"Predicción: {'Clase 1' if predicted_class[0][0] == 1 else 'Clase 0'}")
+P6_1_5 = st.selectbox(
+"5. ¿Quién cree usted que tiene mayor capacidad para trabajar y/o estudiar?",
+("La mujer", "El hombre", "Ambos tienen la misma capacidad"))
 
-####
+P6_2_1 = st.selectbox(
+"1. ¿Está usted de acuerdo en que hombres y mujeres tienen el mismo derecho a salir por las noches a divertirse?",
+("Sí (de acuerdo)", "No (en desacuerdo)"))
+
+P6_2_2 = st.selectbox(
+"2. ¿Está usted de acuerdo en que las mujeres que tienen hijos(as) trabajen, aún si no tienen necesidad de hacerlo?",
+("Sí (de acuerdo)", "No (en desacuerdo)"))
+
+# Example: map responses to numeric values (you can customize as per your data)
+responses = [
+1 if P6_1_1 == "La mujer" else 2 if P6_1_1 == "El hombre" else 3,
+1 if P6_1_2 == "La mujer" else 2 if P6_1_2 == "El hombre" else 3,
+1 if P6_1_3 == "La mujer" else 2 if P6_1_3 == "El hombre" else 3,
+1 if P6_1_4 == "La mujer" else 2 if P6_1_4 == "El hombre" else 3,
+1 if P6_1_5 == "La mujer" else 2 if P6_1_5 == "El hombre" else 3,
+1 if P6_2_1 == "Sí (de acuerdo)" else 2,
+1 if P6_2_2 == "Sí (de acuerdo)" else 2
+    ]
+
+# Scale the user's input using the scaler
+input_data_scaled = scaler.transform([responses])
+
 # Make a prediction
-# prediction = model.predict(input_data_scaled)
+prediction = model.predict(input_data_scaled)
 
 # Round the prediction
 rounded_prediction = np.round(prediction[0][0])
