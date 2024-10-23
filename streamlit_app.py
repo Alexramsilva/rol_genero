@@ -23,74 +23,99 @@ json_data =({"P6_1_1":{"0":1,"1":1,"2":3,"3":3,"4":3,"5":3,"6":3,"7":3,"8":3,"9"
 
 df = pd.DataFrame(json_data)
 
-# Definir las preguntas y las opciones para los menús desplegables
-questions = {
-    'P6_1_1': '1. ¿Quién cree usted que debe ser responsable del cuidado de los hijos(as), de las personas enfermas y ancianas?',
-    'P6_1_2': '2. ¿Quién cree usted que debe ganar más salario en el trabajo?',
-    'P6_1_3': '3. ¿Quién cree usted que debe ser el responsable de las tareas de la casa?',
-    'P6_1_4': '4. ¿Quién cree usted que debe ser el responsable de traer dinero para la casa?',
-    'P6_1_5': '5. ¿Quién cree usted que tiene mayor capacidad para trabajar y/o estudiar?',
-    'P6_2_1': '1. ¿Está usted de acuerdo en que hombres y mujeres tienen el mismo derecho a salir por las noches a divertirse?',
-    'P6_2_2': '2. ¿Está usted de acuerdo en que las mujeres que tienen hijos(as) trabajen, aún si no tienen necesidad de hacerlo?'
-}
+# Separate features (X) and target (Y)
+    X = data.iloc[:, :-1]  # All columns except the last one (features)
+    Y = data.iloc[:, -1]   # The last column (target)
 
-options = {
-    'P6_1_1': ['La mujer', 'El hombre', 'Ambos'],
-    'P6_1_2': ['La mujer', 'El hombre', 'Deben ganar lo mismo'],
-    'P6_1_3': ['La mujer', 'El hombre', 'Ambos'],
-    'P6_1_4': ['La mujer', 'El hombre', 'Ambos'],
-    'P6_1_5': ['La mujer', 'El hombre', 'Ambos tienen la misma capacidad'],
-    'P6_2_1': ['Sí (de acuerdo)', 'No (en desacuerdo)'],
-    'P6_2_2': ['Sí (de acuerdo)', 'No (en desacuerdo)']
-}
+    # Encode categorical variables if necessary
+    if Y.dtype == 'object':
+        label_encoder = LabelEncoder()
+        Y = label_encoder.fit_transform(Y)
 
-# Interfaz de usuario en Streamlit
-st.title('Predicción con Red Neuronal')
-st.write('Seleccione sus respuestas a las preguntas para predecir un resultado:')
+    # Scaling the features
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
 
-# Diccionario para almacenar las respuestas seleccionadas
-user_responses = {}
+    # Split the dataset into training and testing sets
+    X_train, X_test, Y_train, Y_test = train_test_split(X_scaled, Y, test_size=0.2, random_state=42)
 
-for key, question in questions.items():
-    user_responses[key] = st.selectbox(question, options[key])
+    # Build the ANN model
+    model = Sequential()
+    model.add(Dense(64, input_dim=X_train.shape[1], activation='relu'))
+    model.add(Dense(32, activation='relu'))
+    model.add(Dense(1, activation='linear'))  # Output layer
 
-# Convertir las respuestas seleccionadas a un dataframe
-response_df = pd.DataFrame([user_responses])
+    # Compile the model
+    model.compile(loss='mean_squared_error', optimizer='adam')
 
+    # Train the model
+    model.fit(X_train, Y_train, epochs=50, batch_size=10, verbose=1)
 
-# Preprocesar los datos
-X = df[['P6_1_1','P6_1_2','P6_1_3','P6_1_4','P6_1_5','P6_2_1', 'P6_2_2']]  # Reemplaza 'Variable de Predicción' con la columna dependiente
-y = df[['Y']]  # Ajusta según tu CSV
+    # Define user input questions
+    st.write("Responde a las siguientes preguntas:")
 
+    # Example questions (corresponding to features in your dataset)
+    P6_1_1 = st.selectbox(
+        "1. ¿Quién cree usted que debe ser responsable del cuidado de los hijos(as), de las personas enfermas y ancianas?",
+        ("La mujer", "El hombre", "Ambos")
+    )
 
-# Separar los datos en entrenamiento y prueba
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    P6_1_2 = st.selectbox(
+        "2. ¿Quién cree usted que debe ganar más salario en el trabajo?",
+        ("La mujer", "El hombre", "Deben ganar lo mismo")
+    )
 
-# Escalado de características
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
+    P6_1_3 = st.selectbox(
+        "3. ¿Quién cree usted que debe ser el responsable de las tareas de la casa?",
+        ("La mujer", "El hombre", "Ambos")
+    )
 
-# Crear el modelo de red neuronal
-model = Sequential()
-model.add(Dense(16, activation='relu', input_shape=(X_train.shape[1],)))
-model.add(Dense(8, activation='relu'))
-model.add(Dense(1, activation='sigmoid'))  # Cambia según el tipo de salida (clasificación o regresión)
+    P6_1_4 = st.selectbox(
+        "4. ¿Quién cree usted que debe ser el responsable de traer dinero para la casa?",
+        ("La mujer", "El hombre", "Ambos")
+    )
 
-model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    P6_1_5 = st.selectbox(
+        "5. ¿Quién cree usted que tiene mayor capacidad para trabajar y/o estudiar?",
+        ("La mujer", "El hombre", "Ambos tienen la misma capacidad")
+    )
 
-# Entrenar el modelo
-model.fit(X_train_scaled, y_train, epochs=50, batch_size=32, verbose=0)
+    P6_2_1 = st.selectbox(
+        "1. ¿Está usted de acuerdo en que hombres y mujeres tienen el mismo derecho a salir por las noches a divertirse?",
+        ("Sí (de acuerdo)", "No (en desacuerdo)")
+    )
 
-# Realizar predicción con las respuestas del usuario
-user_responses_scaled = scaler.transform(response_df)
-prediction = model.predict(user_responses_scaled)
+    P6_2_2 = st.selectbox(
+        "2. ¿Está usted de acuerdo en que las mujeres que tienen hijos(as) trabajen, aún si no tienen necesidad de hacerlo?",
+        ("Sí (de acuerdo)", "No (en desacuerdo)")
+    )
 
-# Mostrar el resultado de la predicción
-st.write(f'Predicción: {prediction[0][0]:.2f}')
-st.write("1=Mujer casada o unida con pareja residente")
-st.write("2=Mujer casada o unida con pareja ausente temporal")
-st.write("3=Mujer separada o divorciada")
-st.write("4=Mujer viuda")
-st.write("5=Mujer soltera con novio o pareja o exnovio o expareja")
-st.write("6=Mujer soltera que nunca ha tenido novio")
+    # Example: map responses to numeric values (you can customize as per your data)
+    responses = [
+        1 if P6_1_1 == "La mujer" else 2 if P6_1_1 == "El hombre" else 3,
+        1 if P6_1_2 == "La mujer" else 2 if P6_1_2 == "El hombre" else 3,
+        1 if P6_1_3 == "La mujer" else 2 if P6_1_3 == "El hombre" else 3,
+        1 if P6_1_4 == "La mujer" else 2 if P6_1_4 == "El hombre" else 3,
+        1 if P6_1_5 == "La mujer" else 2 if P6_1_5 == "El hombre" else 3,
+        1 if P6_2_1 == "Sí (de acuerdo)" else 2,
+        1 if P6_2_2 == "Sí (de acuerdo)" else 2
+    ]
+
+    # Scale the user's input using the scaler
+    input_data_scaled = scaler.transform([responses])
+
+    # Make a prediction
+    prediction = model.predict(input_data_scaled)
+
+    # Round the prediction
+    rounded_prediction = np.round(prediction[0][0])
+
+    # Display the rounded prediction
+    st.write(f"La predicción del estado civil de la mujer encuestada es: {rounded_prediction}")
+
+    st.write("1=Mujer casada o unida con pareja residente")
+    st.write("2=Mujer casada o unida con pareja ausente temporal")
+    st.write("3=Mujer separada o divorciada")
+    st.write("4=Mujer viuda")
+    st.write("5=Mujer soltera con novio o pareja o exnovio o expareja")
+    st.write("6=Mujer soltera que nunca ha tenido novio")
