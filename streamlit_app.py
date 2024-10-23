@@ -21,10 +21,10 @@ st.image("URC.png", caption="UST-URC Universidad Rosario Castellanos", width=200
 
 # Cargar los datos desde el CSV en GitHub
 
-url = 'https://github.com/Alexramsilva/rol_genero/blob/main/MM.csv'
+# url = 'https://github.com/Alexramsilva/rol_genero/blob/main/MM.csv'
 
 # Cargar el conjunto de datos
-df=pd.read_csv(url, low_memory=False)
+df=pd.read_csv('MM.csv')
 
 # Definir las preguntas y las opciones para los menús desplegables
 questions = {
