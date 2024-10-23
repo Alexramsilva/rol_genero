@@ -20,11 +20,28 @@ st.title("Red Neuronal Artificial [CDMX]| Encuesta Nacional sobre la Dinámica d
 st.image("URC.png", caption="UST-URC Universidad Rosario Castellanos", width=200)
 
 # Cargar los datos desde el CSV en GitHub
+
 @st.cache
 def load_data():
-    url = 'https://github.com/Alexramsilva/rol_genero/blob/main/MM.csv'  # Coloca el enlace raw de GitHub
-    df = pd.read_csv(url)
+    url = 'https://github.com/Alexramsilva/rol_genero/blob/main/MM.csv'
+
+    # Intentar leer con diferentes opciones
+    try:
+        df = pd.read_csv(url)  # Verificar si usa coma como delimitador
+    except pd.errors.ParserError:
+        st.error("Error al leer el archivo CSV. Intentando con ';' como delimitador.")
+        df = pd.read_csv(url, sep=';')  # Intentar con punto y coma
+
     return df
+
+# Cargar el conjunto de datos
+df = load_data()
+
+# Mostrar un mensaje si no se puede cargar el archivo
+if df is not None:
+    st.write(df.head())
+else:
+    st.error("No se pudo cargar el archivo CSV.")
 
 # Definir las preguntas y las opciones para los menús desplegables
 questions = {
