@@ -50,7 +50,8 @@ model.fit(X_train, Y_train, epochs=50, batch_size=10, verbose=1)
 
 # Define user input questions
 st.write("Responde a las siguientes preguntas:")
-
+# Añadir la línea separadora
+st.markdown("<hr>", unsafe_allow_html=True)
 # Example questions (corresponding to features in your dataset)
 P6_1_1 = st.selectbox(
 "1. ¿Quién cree usted que debe ser responsable del cuidado de los hijos(as), de las personas enfermas y ancianas?",
@@ -106,9 +107,24 @@ rounded_prediction = np.round(prediction[0][0])
 # Display the rounded prediction
 st.write(f"La predicción del estado civil de la mujer encuestada es: {rounded_prediction}")
 
+# Añadir la línea separadora
+st.markdown("<hr>", unsafe_allow_html=True)
+
 st.write("1=Mujer casada o unida con pareja residente")
 st.write("2=Mujer casada o unida con pareja ausente temporal")
 st.write("3=Mujer separada o divorciada")
 st.write("4=Mujer viuda")
 st.write("5=Mujer soltera con novio o pareja o exnovio o expareja")
 st.write("6=Mujer soltera que nunca ha tenido novio")
+
+# Personalización de diseño
+st.markdown("""
+<style>
+    .stApp {
+        background-color: #b65db2;
+    }
+    .css-1d391kg {
+        color:  #faf7f8;
+    }
+</style>
+""", unsafe_allow_html=True)
