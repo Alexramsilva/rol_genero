@@ -130,4 +130,4 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Mostrar GIF desde una ruta local
-st.image("gifqr.gif", caption="GIF local", use_column_width=True)
+st.image("gifqr.gif", caption="GIF local", use_column_width=False)
