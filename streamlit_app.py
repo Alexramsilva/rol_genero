@@ -27,14 +27,10 @@ df = pd.DataFrame(json_data)
 # Separate features (X) and target (Y)
 X = df.iloc[:, :-1]  # All columns except the last one (features)
 Y = df.iloc[:, -1]   # The last column (target)
-# Encode categorical variables if necessary
-    if Y.dtype == 'object':
-        label_encoder = LabelEncoder()
-        Y = label_encoder.fit_transform(Y)
 
-    # Scaling the features
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
+# Scaling the features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
 
 
 # Split the dataset into training and testing sets
