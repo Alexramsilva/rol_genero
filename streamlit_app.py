@@ -88,10 +88,10 @@ responses = [
     ]
 
 # Scale the user's input using the scaler
-input_data_scaled = scaler.transform([responses])
+# input_data_scaled = scaler.transform([responses])
 
 # Make a prediction
-prediction = model.predict(input_data_scaled)
+prediction = model.predict(responses)
 
 # Round the prediction
 rounded_prediction = np.round(prediction[0][0])
