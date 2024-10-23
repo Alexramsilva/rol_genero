@@ -16,7 +16,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 
 # Title of the app
-st.title("Red Neuronal Artificial [CDMX]| Encuesta Nacional sobre la Dinámica de las Relaciones en los Hogares (ENDIREH) 2021")
+st.title("Red Neuronal Artificial [CDMX]| Encuesta Nacional sobre la Dinámica de las Relaciones en los Hogares, 2021 (INEGI)")
 
 st.image("URC.png", caption="UST-URC Universidad Rosario Castellanos", width=200)
 
@@ -104,6 +104,10 @@ prediction = model.predict(input_data_scaled)
 # Round the prediction
 rounded_prediction = np.round(prediction[0][0])
 
+# Añadir la línea separadora
+st.markdown("<hr>", unsafe_allow_html=True)
+
+
 # Display the rounded prediction
 st.write(f"La predicción del estado civil de la mujer encuestada es: {rounded_prediction}")
 
@@ -130,4 +134,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Mostrar GIF desde una ruta local
-st.image("gifqr.gif", caption="GIF local", use_column_width=False)
+st.image("gifqr.gif", use_column_width=False)
+
+# Sección de recursos adicionales
+st.header("Recursos Adicionales")
+st.write("Encuesta Nacional sobre la Dinámica de las Relaciones en los Hogares, 2021. (ENEGI)")
+st.write("https://www.inegi.org.mx/programas/endireh/2021/")
+
+# Footer
+st.write("Desarrollado por: [Perspectiva de Género para el Diseño Social | Grupos 104, 107 COY-LCFI-URC].")
